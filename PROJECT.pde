@@ -20,12 +20,12 @@ int keyRight = 0;
 Button playOne;
 
 void setup() {
-  size(750,750);
-  frameRate(60);
-  ellipseMode(CENTER);
+  size(750,750); //size of game is 750 by 750 pixels
+  frameRate(60); //set framerate to 60
+  ellipseMode(CENTER); //set mode for drawing circles to center
   
-  game = new Game();
-  menuChoice = new MenuScreen();
+  game = new Game(); //instantiate the game object, used for drawing and updating the player and the level
+  menuChoice = new MenuScreen(); //instantiation of all the screens that are used
   singleGameSelectChoice = new SingleGameSelectScreen();
   singleGamePlayChoice = new SingleGamePlayScreen();
   singleGameEndChoice = new SingleGameEndScreen();
@@ -39,6 +39,7 @@ void setup() {
   playerRightMove = loadImage("assets/playerRightMove.png");
   playerStop = loadImage("assets/playerStop.png");
   
+  //add the flames to the array - to be cycled through to give animated effect
   flames.add(loadImage("assets/flame1.png"));
   flames.add(loadImage("assets/flame2.png"));
   flames.add(loadImage("assets/flame3.png"));
@@ -46,11 +47,11 @@ void setup() {
 }
 
 void draw() {
-  displayCurrentView();
+  displayCurrentView(); //use the display function defined in Screens to draw to the canvas
 }
 
 void mouseReleased() {
-  buttonUsable = true;
+  buttonUsable = true; //when the mouse is released, set the button flag to true - used in the Button class
 }
 
 void keyPressed() { //upon pressing the key, the state is set to true - this is to allow for multiple keys being pressed at the same time
@@ -66,7 +67,7 @@ void keyPressed() { //upon pressing the key, the state is set to true - this is 
 }
 
 void keyReleased() {
-  if (key == ' ') {
+  if (key == ' ') { //jump key
     keyJump = false;
     jumpOnce = true;
   }

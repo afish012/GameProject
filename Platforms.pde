@@ -3,24 +3,26 @@ class Platform { //class for each platform in the game area
   PVector pos; // (x,y) position with a set width
   float platformWidth;
   
-  color baseColor;
+  color baseColor; //color of the platform
   color hitboxColor;
   
-  void setColor() {
+  void setColor() { //set color function for the base platform
     this.baseColor = color(83,111,122);
     this.hitboxColor = color(142,189,206);
   }
   
-  Platform(float x, float y, float w) { //instantiate with a position and width, and a type (0 default, 1 start, 2 end)
+  Platform(float x, float y, float w) { //instantiate with a position and width
     this.pos = new PVector(x,y);
     this.platformWidth = w;
-    this.setColor();
+    this.setColor(); //set the color
   }
   
-  boolean isStart() { return false; }
+  boolean isStart() { return false; } //functions to return the state of the platform - start platform is unused but end platform is critical
   boolean isFinish() {return false; }
   
   void display(float playerX) { //displays the platform
+  
+    //find where the platform is in relation to the player - only display it if the player is near
     float dist1 = this.pos.x - playerX;
     float dist2 = this.pos.x + this.platformWidth - playerX;
     if (dist1 < 0) {
@@ -47,7 +49,7 @@ class Platform { //class for each platform in the game area
   
 }
 
-class StartPlatform extends Platform {
+class StartPlatform extends Platform { //start platform and end platform are the same as platform, except they display different colors and return different values for the start and end checks
   
   StartPlatform(float x, float y, float w) {
     super(x,y,w);

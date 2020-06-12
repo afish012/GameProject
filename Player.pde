@@ -27,19 +27,19 @@ class Player {
     this(0,0);
   }
   
-  void setPos(float x,float y) {
+  void setPos(float x,float y) { //used to reset the player's position if they fall off a platform or reset a level
     this.pos.set(x,y);
     this.vel.set(0,0);
   }
   
   void limitVel(PVector toLimit) { //function to limit a velocity vector to the terminal velocities defined above
-    if (toLimit.x > this.termVelHorizontal) {
+    if (toLimit.x > this.termVelHorizontal) { //if above the positive limit, set to the positive limit
       toLimit.x = this.termVelHorizontal;
-    } else if (toLimit.x < this.termVelHorizontal * -1) {
+    } else if (toLimit.x < this.termVelHorizontal * -1) { //if below the negative limit, set to the negative limit
       toLimit.x = this.termVelHorizontal * -1;
     }
     
-    if (toLimit.y > this.termVelVertical) {
+    if (toLimit.y > this.termVelVertical) { //do the same for the y values
       toLimit.y = this.termVelVertical;
     } else if (toLimit.y < this.termVelVertical * -1) {
       toLimit.y = this.termVelVertical * -1;

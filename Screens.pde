@@ -28,17 +28,19 @@ class RunData { //object to store data from each run in multi game runs - only s
     this.forfeit = _forfeit;
   }
   
-  String asString() {
+  String asString() { //return the data as a string to be added to a file
     return this.actualDifficulty + " " + this.perceivedDifficulty + " " + this.seed + " " + this.attempts + " " + this.time + " " + this.finalTime + " " + this.forfeit;
   }
   
   
 }
 
-View currentView = View.Menu;
-int difficulty = 0;
-int seed = 0;
+View currentView = View.Menu; //initially set the current view to the menu screen
 
+/// variables for recording level data
+int difficulty = 0;
+int perceivedDifficulty = 0;
+int seed = 0;
 int attempts = 1;
 float time = 0;
 float currentAttemptTime = 0;
@@ -46,18 +48,18 @@ boolean forfeitFlag = false;
 
 int playthrough = 0;
 RunData[] playthroughData = new RunData[5];
-PrintWriter fileOut;
+///
 
-int perceivedDifficulty = 0;
+PrintWriter fileOut; //to eventually write the data to a text file
 
-void resetLevelVars() {
+void resetLevelVars() { //reset the recording variables to their defaults
   attempts = 1;
   time = 0;
   currentAttemptTime = 0;
   forfeitFlag = false;
 }
 
-void setSeed() {
+void setSeed() { //set the seed according to the one given in seed.txt or set one at random if there is none
   String[] seedtxtRead = loadStrings("seed.txt");
   if (seedtxtRead.length > 0) {
     String readSeed = seedtxtRead[0];
@@ -67,16 +69,16 @@ void setSeed() {
   }
 }
 
-void randomiseSeed() {
+void randomiseSeed() { //choose a random seed
   seed = (int) random(-2147483648,2147483647);
 }
 
-void clearPlaythroughs() {
+void clearPlaythroughs() { //clear playthroughs for multiple playthrough mode
   playthrough = 0;
   playthroughData = new RunData[5];
 }
 
-Screen menuChoice;
+Screen menuChoice; //all the screen objects instantiated in setup()
 Screen singleGameSelectChoice;
 Screen singleGamePlayChoice;
 Screen singleGameEndChoice;
@@ -84,7 +86,7 @@ Screen multiGameSelectChoice;
 Screen multiGamePlayChoice;
 Screen multiGameEndChoice;
 
-void displayCurrentView() {
+void displayCurrentView() { //depending on the current view, a different screen will be displayed and updated
   switch (currentView) {
     case Menu:
       menuChoice.display();
@@ -117,7 +119,7 @@ void displayCurrentView() {
   }
 }
 
-static interface Screen {
+static interface Screen { //interface that all screens implement
   void display();
   void check();
 }
@@ -129,13 +131,13 @@ class MenuScreen implements Screen {
   Button playMultiple;
   Button exit;
   
-  MenuScreen() {
+  MenuScreen() { //upon instantiation set location of buttons
     this.playOne = new Button(width/4, height/4, 150, "Play One");
     this.playMultiple = new Button(width/4, height/2, 150, "Play Five");
     this.exit = new Button(width/4, 3 * height/4, 150, "Exit");
   }
   
-  void display() {
+  void display() { //display any text and all buttons
     background(0);
     textSize(30);
     text("Procedural Platformer", width/2 + 50, 30);
@@ -144,17 +146,17 @@ class MenuScreen implements Screen {
     this.exit.display();
   }
   
-  void check() {
+  void check() { //checks for if buttons are pressed
     if (this.playOne.pressed()) {
-      currentView = View.SingleGameSelect;
+      currentView = View.SingleGameSelect; //switch menu view
     }
     
     if (this.playMultiple.pressed()) {
-      currentView = View.MultiGameSelect;
+      currentView = View.MultiGameSelect; //switch menu view
     }
     
     if (this.exit.pressed()) {
-      exit();
+      exit(); //exit game
     }
   }
   
@@ -167,13 +169,13 @@ class SingleGameSelectScreen implements Screen {
   Button back;
   Slider difficultySlider;
   
-  SingleGameSelectScreen() {
+  SingleGameSelectScreen() { //same for all menu screens
     this.start = new Button(width/4, height/2, 150, "Start");
     this.back = new Button(width/4, 3 * height/4, 150, "Back");
-    this.difficultySlider = new Slider(width/4, height/4, width/2, 50, 75, 0, 100);
+    this.difficultySlider = new Slider(width/4, height/4, width/2, 50, 75, 0, 100); //create a new slider for difficulty
   }
   
-  void display() {
+  void display() { //display text and buttons / slider
     background(0);
     this.start.display();
     this.back.display();
@@ -186,10 +188,10 @@ class SingleGameSelectScreen implements Screen {
   
   void check() {
     
-    this.difficultySlider.update();
-    difficulty = this.difficultySlider.getValue();
+    this.difficultySlider.update(); //update the slider to get the correct value
+    difficulty = this.difficultySlider.getValue(); //set the difficulty to the slider value
     
-    if (this.start.pressed()) {
+    if (this.start.pressed()) { //if start button pressed, set the seed and create a new level with the difficulty set by the slider, reset all the level variables and switch to game play screen
       setSeed();
       game.init(seed, difficulty);
       resetLevelVars();
@@ -197,7 +199,7 @@ class SingleGameSelectScreen implements Screen {
     }
     
     if (this.back.pressed()) {
-      currentView = View.Menu;
+      currentView = View.Menu; //switch menu view
     }
   }
   
@@ -205,27 +207,27 @@ class SingleGameSelectScreen implements Screen {
 
 class SingleGamePlayScreen implements Screen {
   
-  Button forfeit = new Button(75, 75, 75,"Forfeit");
+  Button forfeit = new Button(75, 75, 75,"Forfeit"); //forfeit button in top left of screen
   
   void display() {
     game.display(); // display the game
-    forfeit.display();
-    textSize(20);
+    forfeit.display(); //dispaly button
+    textSize(20); //add all text relating to player statistics for that level
     text("Attempt: " + attempts, 10, height - 75);
     text("Current Attempt Time: " + String.format("%.1f", currentAttemptTime / 60), 10, height - 50);
     text("Total Time: " + String.format("%.1f", time / 60), 10, height - 25);
   }
   
   void check() {
-    game.update();
+    game.update(); //update the game
     
-    if (game.player.pos.y > 500) {
+    if (game.player.pos.y > 500) { //if the player falls off the level, reset their position
       attempts++;
       currentAttemptTime = 0;
       game.player.setPos(0,-10);
     }
     
-    if (forfeit.pressed()) {
+    if (forfeit.pressed()) { //if the forfeit button is pressed, set the forfeit flag to true and switch menu view
       forfeitFlag = true;
       currentView = View.SingleGameEnd;
     }
@@ -235,10 +237,10 @@ class SingleGamePlayScreen implements Screen {
     Platform lastPlatform = game.platformList.get(game.platformList.size() -1);
     
     if (game.player.pos.x > lastPlatform.pos.x && game.player.pos.x < lastPlatform.pos.x + lastPlatform.platformWidth && game.player.pos.y == lastPlatform.pos.y) {
-      currentView = View.SingleGameEnd;
+      currentView = View.SingleGameEnd; //if the player is on the last platform, switch the menu view
     }
     
-    time++;
+    time++; //increase the time and attempt time at the end of the update
     currentAttemptTime++;
     
   }
@@ -247,7 +249,7 @@ class SingleGamePlayScreen implements Screen {
 
 class SingleGameEndScreen implements Screen {
   
-  Button back;
+  Button back; //single button to switch back to main menu
   
   SingleGameEndScreen() {
     this.back = new Button(width/2, 3 * height/4, 150, "Menu");
@@ -255,7 +257,7 @@ class SingleGameEndScreen implements Screen {
   
   void display() {
     background(0);
-    text("Statistics", width/4, height/4);
+    text("Statistics", width/4, height/4); //display statistics for the level that the player just completed - no need to store for this mode
     if (forfeitFlag) {
       text("You forfeit the level of difficulty: " + difficulty, width/4, height/4 + 25);
       text("Total time taken: " + String.format("%.1f", time / 60), width/4, height/4 + 50);
@@ -274,7 +276,7 @@ class SingleGameEndScreen implements Screen {
   
   void check() {
     if (this.back.pressed()) {
-      currentView = View.Menu;
+      currentView = View.Menu; //go back to main menu
     }
   }
   
@@ -290,7 +292,7 @@ class MultiGameSelectScreen implements Screen {
     play = new Button(3 * width/4, 3 * height/4, 150, "Play");
   }
   
-  void display() {
+  void display() { //display explanation and buttons
     background(0);
     textSize(20);
     text("Here, you play five levels of varying difficulty in a row.\nAfter each level, you will be asked about how difficult you\nthought it was on a scale of 0 to 100.\nYou may forfeit the level if you deem it too difficult, but please\nattempt it first!", width/8, height/4);
@@ -303,7 +305,7 @@ class MultiGameSelectScreen implements Screen {
       currentView = View.Menu;
     }
     
-    if (play.pressed()) {
+    if (play.pressed()) { //start multi playthrough mode - clear playthroughs/reset vars, set the seed to a random value, set the difficulty to a random value, create a level, and switch to the game view
       clearPlaythroughs();
       randomiseSeed();
       difficulty = (int) random(101);
@@ -316,7 +318,7 @@ class MultiGameSelectScreen implements Screen {
 
 class MultiGamePlayScreen implements Screen {
   
-  Button forfeit;
+  Button forfeit; //same as single play
   
   MultiGamePlayScreen() {
     forfeit = new Button(75, 75, 75,"Forfeit");
@@ -325,7 +327,7 @@ class MultiGamePlayScreen implements Screen {
   void display() {
     game.display(); // display the game
     forfeit.display();
-    textSize(20);
+    textSize(20); //same statistics view as single play, except this has the current playthrough as well
     text("Playthrough: " + (playthrough + 1), 10, height - 100);
     text("Attempt: " + attempts, 10, height - 75);
     text("Current Attempt Time: " + String.format("%.1f", currentAttemptTime / 60), 10, height - 50);
@@ -333,15 +335,15 @@ class MultiGamePlayScreen implements Screen {
   }
   
   void check() {
-    game.update();
+    game.update(); //update the game
     
     if (game.player.pos.y > 500) {
-      attempts++;
+      attempts++; //if the player falls off the level, reset position - same as single play
       currentAttemptTime = 0;
       game.player.setPos(0,-10);
     }
     
-    if (forfeit.pressed()) {
+    if (forfeit.pressed()) { //on forfeit, switch menu screen
       forfeitFlag = true;
       currentView = View.MultiGameEnd;
     }
@@ -351,8 +353,7 @@ class MultiGamePlayScreen implements Screen {
     Platform lastPlatform = game.platformList.get(game.platformList.size() -1);
     
     if (game.player.pos.x > lastPlatform.pos.x && game.player.pos.x < lastPlatform.pos.x + lastPlatform.platformWidth && game.player.pos.y == lastPlatform.pos.y) {
-      playthroughData[playthrough] = new RunData(difficulty, perceivedDifficulty, seed, attempts, time, currentAttemptTime, forfeitFlag);
-      currentView = View.MultiGameEnd;
+      currentView = View.MultiGameEnd; //again, if player completes the level then switch menu screen
     }
     
     time++;
@@ -364,10 +365,10 @@ class MultiGamePlayScreen implements Screen {
 
 class MultiGameEndScreen implements Screen {
   
-  Slider perceivedDifficultySlider;
+  Slider perceivedDifficultySlider; //implement a slider for the user to record their perceived difficulty of the level
   Button next;
   
-  Button left;
+  Button left; //two parts to this screen - recording the data after a level completes, or showing all the data for all the playthroughs
   Button right;
   Button back;
   
@@ -386,11 +387,11 @@ class MultiGameEndScreen implements Screen {
   
   
   void check() {
-    if (this.review) {
+    if (this.review) { //if the player still needs to review levels
       this.perceivedDifficultySlider.update();
-      perceivedDifficulty = perceivedDifficultySlider.getValue();
+      perceivedDifficulty = perceivedDifficultySlider.getValue(); //get the value on the slider
       
-      if (next.pressed()) {
+      if (next.pressed()) { //if the next level button is pressed, the data is recorded and the variables are reset. If the button is pressed and there are no more levels to complete, review is set to false.
         playthroughData[playthrough] = new RunData(difficulty, perceivedDifficulty, seed, attempts, time, currentAttemptTime, forfeitFlag);
         if (playthrough < 4) {
           playthrough++;
@@ -403,8 +404,8 @@ class MultiGameEndScreen implements Screen {
           this.review = false;
         }
       }
-    } else {
-      if (left.pressed()) {
+    } else { //review is false
+      if (left.pressed()) { //update the buttons responsible for showing the playthrough data
         this.statView--;
         if (this.statView < 0) {
           this.statView = 0;
@@ -418,7 +419,7 @@ class MultiGameEndScreen implements Screen {
         }
       }
       
-      if (back.pressed()) {
+      if (back.pressed()) { //if back to menu button is pressed, then send the data to a new file before returning to the menu
         this.statView = 0;
         this.review = true;
         fileOut = createWriter("Results" + hour() + "-" + minute() + "-" + second() + ".txt");
