@@ -59,21 +59,12 @@ class Generator {
       this.referencePlayer.limitVel(newVel);
       step.add(newVel);
     }
-    //EXPERIMENTAL
-    //if (step.x - endX < this.referencePlayer.playerWidth / 2) { //the step is going to have overstepped the platform
-    //  return newVel.x; //if the player is still able to jump off the platform, that is fine
-    //}
     
     return newVel.x - this.referencePlayer.accHorizontal; //return the velocity found before the player overstepped the endX
   }
   
   ///END FUNCTIONS FOR EMULATING PLAYER
-  
-  //void applyNoise(float xPos) { //apply noise to the direction vector at the specified x
-  //  float noiseToAngle = map(noise(xPos), 0, 1, angleLimitUp - dir.heading(), angleLimitDown - dir.heading());
-  //  dir.rotate(noiseToAngle);
-  //}
-  
+
   void setAngleAt(float xPos, float angleUp, float angleDown) { //apply noise to the direction vector at the specified x within the specified bounds
     this.dir = PVector.fromAngle(map(noise(xPos), 0, 1, angleUp, angleDown));
   }
